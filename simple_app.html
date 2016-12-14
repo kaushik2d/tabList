@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular.min.js"></script>
+<link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+<style type="text/css">
+    .liClass{
+        display: inline;
+        list-style-type: none;
+        padding-right: 20px;
+        float: left;
+    }
+    .inputAdd {
+        margin-top: 20px;
+    }
+
+    .inputSpanLabel {
+        font-size: 100%;
+    }
+
+    .closeButton {
+        font-size: 100%;
+        border: 0px;
+        padding-right: 0;
+    }
+</style>
+<body>
+
+    <script>
+        var app = angular.module("tagList", []); 
+        app.controller("tabCtrl", function($scope) {
+            $scope.tags = ["baar", "bar", "foo"];
+            $scope.addItem = function () {
+                $scope.errortext = "";
+                if (!$scope.addMe) {return;}        
+                if ($scope.tags.indexOf($scope.addMe) == -1) {
+                    $scope.tags.push($scope.addMe);
+                    $scope.addMe = "";
+                } else {
+                    $scope.errortext = "The tag name is already in your tag list.";
+                }
+            }
+            $scope.removeItem = function (x) {
+                $scope.errortext = "";    
+                $scope.tags.splice(x, 1);
+            }
+        });
+    </script>
+
+    <div ng-app="tagList" ng-controller="tabCtrl">
+        <div class="container theme-showcase" role="main">
+            <div class="jumbotron">
+                <p>Tag List</p>
+                <div class="row">
+                    <ul>
+                        <li class="liClass" ng-repeat="x in tags">
+                            <span class="label label-success inputSpanLabel">{{x}} 
+                                <button class="label label-success closeButton" ng-click="removeItem($index)" type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </span>
+                        </li>
+                    </ul>
+                </div>
+                <input class="inputAdd" ng-model="addMe">
+                <button ng-click="addItem()">Add</button>
+                <p>{{errortext}}</p>
+                <p>You cannot add a two entries with the same name() </p>
+                <p>* Case Sensitive </p>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>
