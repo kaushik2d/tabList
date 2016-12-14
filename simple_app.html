@@ -26,24 +26,54 @@
 <body>
 
     <script>
-        var app = angular.module("tagList", []); 
-        app.controller("tabCtrl", function($scope) {
-            $scope.tags = ["baar", "bar", "foo"];
+
+        var app = angular.module("tagList", []);
+
+        // 
+        app.factory('myStorageService', function() {
+            var tags = [];
+            return {
+                addItem: function(addMe) {
+                    var errortext = true;
+                    if (tags.indexOf(addMe) == -1) {
+                        tags.push(addMe);
+                        addMe = "";
+                    } else {
+                        errortext = "The tag name is already in your tag list.";
+                    }
+                    return {errortext: errortext, tags : tags}
+                },
+                removeItem : function (x) {
+                    tags.splice(x, 1);
+                    return {errortext: "", tags : tags}
+                },
+                getTags : function () {
+                    return tags;
+                }
+
+            };
+        });
+
+        app.controller("tabCtrl", ['$scope', "myStorageService", function($scope, myStorageService) {
+            
+            $scope.tags = myStorageService.getTags();
+
             $scope.addItem = function () {
                 $scope.errortext = "";
                 if (!$scope.addMe) {return;}        
-                if ($scope.tags.indexOf($scope.addMe) == -1) {
-                    $scope.tags.push($scope.addMe);
-                    $scope.addMe = "";
-                } else {
-                    $scope.errortext = "The tag name is already in your tag list.";
+                var returnVal = myStorageService.addItem($scope.addMe);
+                if (returnVal.errortext !== true) {
+                    $scope.errortext = returnVal.errortext
                 }
-            }
+                $scope.tags = returnVal.tags;
+            };
+
             $scope.removeItem = function (x) {
-                $scope.errortext = "";    
-                $scope.tags.splice(x, 1);
-            }
-        });
+                var returnVal = myStorageService.removeItem(x);
+                $scope.tags = returnVal.tags;
+                $scope.errortext = '';
+            };
+        }]);
     </script>
 
     <div ng-app="tagList" ng-controller="tabCtrl">
